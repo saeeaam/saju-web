@@ -178,7 +178,7 @@ describe('쉬운 말과 전문 용어', () => {
     expect(within(table).getAllByRole('button', { name: /^경쟁/ }).length).toBeGreaterThan(0)
   })
 
-  it('끄면 원래 용어가 사라지고, 결과 화면(해석 요약 제외)에 전문 용어가 남지 않는다', async () => {
+  it('끄면 원래 용어가 사라지고, 결과 화면(사주 풀이 포함)에 전문 용어가 남지 않는다', async () => {
     const user = await show1992()
     await user.click(screen.getByLabelText('전문 용어 함께 보기'))
     expect(document.querySelectorAll('.term-orig')).toHaveLength(0)
@@ -191,6 +191,7 @@ describe('쉬운 말과 전문 용어', () => {
       screen.getByRole('region', { name: /^옛 이름표/ }),
       screen.getByRole('region', { name: /^10년 흐름과 해마다의 흐름/ }),
       screen.getByRole('region', { name: /^자미두수/ }),
+      screen.getByRole('region', { name: '사주 풀이' }),
     ]
     // 펼침 패널(계산 근거)도 열어서 검사한다
     await user.click(screen.getByText('계산 근거 (자리별 비중)'))
@@ -199,7 +200,7 @@ describe('쉬운 말과 전문 용어', () => {
     const starNames = ZIWEI.stars.map((st) => st.ko)
     for (const area of areas) {
       let text = area.textContent ?? ''
-      if (area.getAttribute('aria-labelledby') === 'ziwei-title') {
+      if (['ziwei-title', 'reading-title'].includes(area.getAttribute('aria-labelledby') ?? '')) {
         for (const name of starNames) text = text.split(name).join('')
       }
       for (const word of JARGON) if (text.includes(word)) leftovers.push(`${area.getAttribute('aria-labelledby') ?? 'table'}: ${word}`)
@@ -311,13 +312,39 @@ describe('명리 분석 화면', () => {
     expect(within(section).getByText(/참고로만 보여드립니다/)).toBeTruthy()
   })
 
-  it('해석 요약: 근거가 함께 표시되고 단정 표현이 없다', async () => {
+  it('사주 풀이: 8개 주제가 순서대로, 첫 주제만 펼쳐져 있다', async () => {
     await show1992()
-    const section = screen.getByRole('region', { name: '해석 요약' })
-    const articles = within(section).getAllByRole('article')
-    expect(articles.length).toBeGreaterThanOrEqual(4)
-    for (const a of articles) expect(a.textContent).toContain('근거:')
-    expect(section.textContent).not.toMatch(/반드시|틀림없|무조건|불행/)
+    const section = screen.getByRole('region', { name: '사주 풀이' })
+    const cats = [...section.querySelectorAll('details.cat')] as HTMLDetailsElement[]
+    expect(cats.map((c) => c.querySelector('.cat-title')!.textContent)).toEqual([
+      '성격·기질', '재물', '직업·적성', '연애·결혼', '대인관계·가족', '학업·시험', '건강 (생활 참고)', '올해와 10년 흐름',
+    ])
+    expect(cats.map((c) => c.open)).toEqual([true, false, false, false, false, false, false, false])
+  })
+
+  it('사주 풀이: 재물 주제를 펼치면 손풀이 결과(겉에 없음·숨은 글자에 있음, 2026년 재물 흐름)가 보인다', async () => {
+    const user = await show1992()
+    const wealth = document.querySelector('details.cat[data-category="wealth"]') as HTMLDetailsElement
+    await user.click(within(wealth).getByText('재물'))
+    expect(wealth.open).toBe(true)
+    expect(wealth.textContent).toContain('겉으로는 드러나지 않습니다')
+    expect(wealth.querySelector('[data-line="w-skill"]')).toBeTruthy()
+    // 2026·2027년이 모두 재물 흐름이라 한 줄로 합쳐진다
+    expect(wealth.querySelector('[data-line="w-t-this+next-재성"]')!.textContent).toContain('2026년(병오), 2027년(정미)에는')
+    expect(wealth.textContent).toContain('투자·대출 같은 판단의 근거로 쓰지 마세요')
+  })
+
+  it('사주 풀이: 근거는 쉬운 말 + 원래 용어(켜져 있을 때)', async () => {
+    await show1992()
+    const love = document.querySelector('details.cat[data-category="love"]')!
+    const basis = love.querySelector('.cat-block.basis')!.textContent!
+    expect(basis).toContain('배우자를 뜻하는 기운(재물의 기운) 0개')
+    expect(basis).toContain('재성')
+  })
+
+  it('옛 "해석 요약"은 사주 풀이로 대체되어 없다', async () => {
+    await show1992()
+    expect(screen.queryByRole('region', { name: '해석 요약' })).toBeNull()
   })
 
   it('계산 근거 표: 자리별 비중 합계 100, 돕는 합계 48', async () => {

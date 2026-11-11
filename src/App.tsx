@@ -6,6 +6,7 @@ import type { BirthInput } from './types/input.ts'
 import { DEFAULT_OPTIONS } from './types/options.ts'
 import type { SajuOptions } from './types/options.ts'
 import { AnalysisPanel } from './ui/AnalysisPanel.tsx'
+import { CategoryPanel } from './ui/CategoryPanel.tsx'
 import { DaeunTimeline } from './ui/DaeunTimeline.tsx'
 import { ElementChart } from './ui/ElementChart.tsx'
 import { InputForm } from './ui/InputForm.tsx'
@@ -127,6 +128,7 @@ function Result({ chart, now }: { chart: SajuChart; now: Date }) {
       <div style={{ marginTop: 16 }}>
         <PillarTable chart={chart} />
       </div>
+      <CategoryPanel chart={chart} now={now} />
       <ElementChart chart={chart} />
       <AnalysisPanel chart={chart} />
       <DaeunTimeline chart={chart} now={now} />

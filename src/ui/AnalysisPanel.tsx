@@ -33,7 +33,7 @@ function Mark({ on, k }: { on: boolean; k: TermKey }) {
 export function AnalysisPanel({ chart }: { chart: SajuChart }) {
   const insight = useMemo(() => analyzeChart(chart), [chart])
   const units = useMemo(() => natalUnits(chart), [chart])
-  const { strength, yongshin, shinsal, interpretation } = insight
+  const { strength, yongshin, shinsal } = insight
   const { strongAt, weakAt } = strength.config
 
   return (
@@ -210,21 +210,6 @@ export function AnalysisPanel({ chart }: { chart: SajuChart }) {
         )}
       </section>
 
-      <section aria-labelledby="reading-title">
-        <h2 id="reading-title">해석 요약</h2>
-        <p className="help" style={{ marginTop: 0 }}>
-          계산 결과를 규칙에 따라 문장으로 옮긴 전통 해석의 한 갈래입니다. 같은 입력이면 항상 같은 문장이 나오며, 예측이 아니라 참고용입니다.
-        </p>
-        <div className="cards">
-          {interpretation.map((s) => (
-            <article className="card reading" key={s.id}>
-              <h3>{s.title}</h3>
-              <p>{s.text}</p>
-              <p className="basis">근거: {s.basis}</p>
-            </article>
-          ))}
-        </div>
-      </section>
     </>
   )
 }
