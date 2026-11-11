@@ -1,0 +1,10 @@
+{
+  "_note": "십성. 일간 기준 상대 오행 관계 + 음양 일치 여부. same=음양 같음, diff=음양 다름.",
+  "relations": {
+    "peer": { "same": "비견", "diff": "겁재", "group": "비겁" },
+    "output": { "same": "식신", "diff": "상관", "group": "식상" },
+    "wealth": { "same": "편재", "diff": "정재", "group": "재성" },
+    "officer": { "same": "칠살", "diff": "정관", "group": "관성" },
+    "resource": { "same": "편인", "diff": "정인", "group": "인성" }
+  }
+}

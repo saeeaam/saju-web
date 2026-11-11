@@ -1,0 +1,14 @@
+[
+  { "id": 0, "ko": "자", "hanja": "子", "yinYang": "yang", "element": "water", "animal": "쥐", "hourStart": 23, "monthTerm": "대설" },
+  { "id": 1, "ko": "축", "hanja": "丑", "yinYang": "yin", "element": "earth", "animal": "소", "hourStart": 1, "monthTerm": "소한" },
+  { "id": 2, "ko": "인", "hanja": "寅", "yinYang": "yang", "element": "wood", "animal": "호랑이", "hourStart": 3, "monthTerm": "입춘" },
+  { "id": 3, "ko": "묘", "hanja": "卯", "yinYang": "yin", "element": "wood", "animal": "토끼", "hourStart": 5, "monthTerm": "경칩" },
+  { "id": 4, "ko": "진", "hanja": "辰", "yinYang": "yang", "element": "earth", "animal": "용", "hourStart": 7, "monthTerm": "청명" },
+  { "id": 5, "ko": "사", "hanja": "巳", "yinYang": "yin", "element": "fire", "animal": "뱀", "hourStart": 9, "monthTerm": "입하" },
+  { "id": 6, "ko": "오", "hanja": "午", "yinYang": "yang", "element": "fire", "animal": "말", "hourStart": 11, "monthTerm": "망종" },
+  { "id": 7, "ko": "미", "hanja": "未", "yinYang": "yin", "element": "earth", "animal": "양", "hourStart": 13, "monthTerm": "소서" },
+  { "id": 8, "ko": "신", "hanja": "申", "yinYang": "yang", "element": "metal", "animal": "원숭이", "hourStart": 15, "monthTerm": "입추" },
+  { "id": 9, "ko": "유", "hanja": "酉", "yinYang": "yin", "element": "metal", "animal": "닭", "hourStart": 17, "monthTerm": "백로" },
+  { "id": 10, "ko": "술", "hanja": "戌", "yinYang": "yang", "element": "earth", "animal": "개", "hourStart": 19, "monthTerm": "한로" },
+  { "id": 11, "ko": "해", "hanja": "亥", "yinYang": "yin", "element": "water", "animal": "돼지", "hourStart": 21, "monthTerm": "입동" }
+]

@@ -1,0 +1,42 @@
+{
+  "_note": "합충형파해. 값은 천간 id(갑0…계9) 또는 지지 id(자0…해11). 출처: docs/261110_명리학 해석 체계.md 3절(통용 규칙). 합화(오행이 실제로 변하는지) 판정은 하지 않는다 — 조건이 학파별로 복잡하다. 오미합의 결과 오행은 화/토 양설이 있어 null.",
+  "stemCombine": [
+    { "pair": [0, 5], "element": "earth" },
+    { "pair": [1, 6], "element": "metal" },
+    { "pair": [2, 7], "element": "water" },
+    { "pair": [3, 8], "element": "wood" },
+    { "pair": [4, 9], "element": "fire" }
+  ],
+  "stemClash": [[0, 6], [1, 7], [2, 8], [3, 9]],
+  "branchSixCombine": [
+    { "pair": [0, 1], "element": "earth" },
+    { "pair": [2, 11], "element": "wood" },
+    { "pair": [3, 10], "element": "fire" },
+    { "pair": [4, 9], "element": "metal" },
+    { "pair": [5, 8], "element": "water" },
+    { "pair": [6, 7], "element": null }
+  ],
+  "triad": [
+    { "branches": [8, 0, 4], "center": 0, "element": "water" },
+    { "branches": [11, 3, 7], "center": 3, "element": "wood" },
+    { "branches": [2, 6, 10], "center": 6, "element": "fire" },
+    { "branches": [5, 9, 1], "center": 9, "element": "metal" }
+  ],
+  "direction": [
+    { "branches": [2, 3, 4], "element": "wood" },
+    { "branches": [5, 6, 7], "element": "fire" },
+    { "branches": [8, 9, 10], "element": "metal" },
+    { "branches": [11, 0, 1], "element": "water" }
+  ],
+  "clash": [[0, 6], [1, 7], [2, 8], [3, 9], [4, 10], [5, 11]],
+  "punish": {
+    "triples": [
+      { "name": "무은지형", "branches": [2, 5, 8] },
+      { "name": "지세지형", "branches": [1, 10, 7] }
+    ],
+    "pairs": [{ "name": "무례지형", "branches": [0, 3] }],
+    "self": [4, 6, 9, 11]
+  },
+  "break": [[0, 9], [1, 4], [2, 11], [3, 6], [5, 8], [7, 10]],
+  "harm": [[0, 7], [1, 6], [2, 5], [3, 4], [8, 11], [9, 10]]
+}

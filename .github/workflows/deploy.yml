@@ -1,0 +1,61 @@
+# main에 푸시하면 검사(타입·린트·테스트)를 모두 통과한 경우에만 GitHub Pages에 배포한다.
+name: 검사 후 배포
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 배포가 겹치면 진행 중인 배포를 끝까지 마치고 다음 것을 실행한다
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # 의존성에 설치 스크립트가 없으므로 끄고 설치한다 (설치 중 임의 코드 실행 방지)
+      - name: 의존성 설치
+        run: npm ci --ignore-scripts
+
+      - name: 타입 검사
+        run: npx tsc -b
+
+      - name: 린트
+        run: npm run lint
+
+      # 시간대를 고정하지 않는다: 러너 기본(UTC)에서도 결과가 같아야 한다
+      - name: 테스트 (교차 검증 포함)
+        run: npm test
+
+      - name: 빌드 (라이선스 고지 포함)
+        run: npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

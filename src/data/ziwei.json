@@ -1,0 +1,75 @@
+{
+  "_note": "자미두수 데이터. 지지 위치는 자=0 … 해=11. 일부 값은 단일 출처/통용 지식이며 구현 후 외부 명반 계산기와 대조 필요. docs: 261110_자미두수.md, 261110_검증 필요 항목 조사.md",
+  "palaces": ["명궁", "형제궁", "부처궁", "자녀궁", "재백궁", "질액궁", "천이궁", "노복궁", "관록궁", "전택궁", "복덕궁", "부모궁"],
+  "bureauByElement": { "water": 2, "wood": 3, "metal": 4, "earth": 5, "fire": 6 },
+  "stars": [
+    { "id": "ziwei", "ko": "자미", "hanja": "紫微", "kind": "main" },
+    { "id": "tianji", "ko": "천기", "hanja": "天機", "kind": "main" },
+    { "id": "taiyang", "ko": "태양", "hanja": "太陽", "kind": "main" },
+    { "id": "wuqu", "ko": "무곡", "hanja": "武曲", "kind": "main" },
+    { "id": "tiantong", "ko": "천동", "hanja": "天同", "kind": "main" },
+    { "id": "lianzhen", "ko": "염정", "hanja": "廉貞", "kind": "main" },
+    { "id": "tianfu", "ko": "천부", "hanja": "天府", "kind": "main" },
+    { "id": "taiyin", "ko": "태음", "hanja": "太陰", "kind": "main" },
+    { "id": "tanlang", "ko": "탐랑", "hanja": "貪狼", "kind": "main" },
+    { "id": "jumen", "ko": "거문", "hanja": "巨門", "kind": "main" },
+    { "id": "tianxiang", "ko": "천상", "hanja": "天相", "kind": "main" },
+    { "id": "tianliang", "ko": "천량", "hanja": "天梁", "kind": "main" },
+    { "id": "qisha", "ko": "칠살", "hanja": "七殺", "kind": "main" },
+    { "id": "pojun", "ko": "파군", "hanja": "破軍", "kind": "main" },
+    { "id": "zuofu", "ko": "좌보", "hanja": "左輔", "kind": "auxiliary" },
+    { "id": "youbi", "ko": "우필", "hanja": "右弼", "kind": "auxiliary" },
+    { "id": "wenchang", "ko": "문창", "hanja": "文昌", "kind": "auxiliary" },
+    { "id": "wenqu", "ko": "문곡", "hanja": "文曲", "kind": "auxiliary" },
+    { "id": "tiankui", "ko": "천괴", "hanja": "天魁", "kind": "auxiliary" },
+    { "id": "tianyue", "ko": "천월", "hanja": "天鉞", "kind": "auxiliary" },
+    { "id": "lucun", "ko": "록존", "hanja": "祿存", "kind": "auxiliary" },
+    { "id": "qingyang", "ko": "경양", "hanja": "擎羊", "kind": "malefic" },
+    { "id": "tuoluo", "ko": "타라", "hanja": "陀羅", "kind": "malefic" },
+    { "id": "huoxing", "ko": "화성", "hanja": "火星", "kind": "malefic" },
+    { "id": "lingxing", "ko": "영성", "hanja": "鈴星", "kind": "malefic" },
+    { "id": "dikong", "ko": "지공", "hanja": "地空", "kind": "malefic" },
+    { "id": "dijie", "ko": "지겁", "hanja": "地劫", "kind": "malefic" }
+  ],
+  "ziweiGroupOffsets": {
+    "_note": "자미 위치 기준 역행 오프셋(음수).",
+    "ziwei": 0, "tianji": -1, "taiyang": -3, "wuqu": -4, "tiantong": -5, "lianzhen": -8
+  },
+  "tianfuGroupOffsets": {
+    "_note": "천부 위치 = (4 - 자미) mod 12. 천부 기준 순행 오프셋.",
+    "tianfu": 0, "taiyin": 1, "tanlang": 2, "jumen": 3, "tianxiang": 4, "tianliang": 5, "qisha": 6, "pojun": 10
+  },
+  "luCunByStem": [2, 3, 5, 6, 5, 6, 8, 9, 11, 0],
+  "kuiYueByStem": {
+    "_note": "천괴·천월: 생년 천간 → [천괴, 천월] 지지. 갑·무·경 축·미 / 을·기 자·신 / 병·정 해·유 / 신 오·인 / 임·계 묘·사 (통용 규칙, iztro 대조로 검증)",
+    "table": [[1, 7], [0, 8], [11, 9], [11, 9], [1, 7], [0, 8], [1, 7], [6, 2], [3, 5], [3, 5]]
+  },
+  "fireBellStart": {
+    "_note": "화성·영성 시작 궁. 생시 지지 순서만큼 순행. 단일 출처(2005 카페 글)에서 재구성, 해년생 사시 예시와 일치.",
+    "groups": [
+      { "name": "인오술", "branches": [2, 6, 10], "huoxing": 1, "lingxing": 3 },
+      { "name": "신자진", "branches": [8, 0, 4], "huoxing": 2, "lingxing": 10 },
+      { "name": "사유축", "branches": [5, 9, 1], "huoxing": 3, "lingxing": 10 },
+      { "name": "해묘미", "branches": [11, 3, 7], "huoxing": 9, "lingxing": 10 }
+    ]
+  },
+  "sihuaByStem": {
+    "_note": "사화: [화록, 화권, 화과, 화기]. 유파 차 있음(통용 표). 값은 star id.",
+    "table": [
+      ["lianzhen", "pojun", "wuqu", "taiyang"],
+      ["tianji", "tianliang", "ziwei", "taiyin"],
+      ["tiantong", "tianji", "wenchang", "lianzhen"],
+      ["taiyin", "tiantong", "tianji", "jumen"],
+      ["tanlang", "taiyin", "youbi", "tianji"],
+      ["wuqu", "tanlang", "tianliang", "wenqu"],
+      ["taiyang", "wuqu", "taiyin", "tiantong"],
+      ["jumen", "taiyang", "wenqu", "wenchang"],
+      ["tianliang", "ziwei", "zuofu", "wuqu"],
+      ["pojun", "jumen", "taiyin", "tanlang"]
+    ]
+  },
+  "brightness": {
+    "_note": "묘왕리함 표는 미확보. Phase 4 전에 채울 것.",
+    "table": null
+  }
+}

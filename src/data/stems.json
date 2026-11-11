@@ -1,0 +1,12 @@
+[
+  { "id": 0, "ko": "갑", "hanja": "甲", "yinYang": "yang", "element": "wood" },
+  { "id": 1, "ko": "을", "hanja": "乙", "yinYang": "yin", "element": "wood" },
+  { "id": 2, "ko": "병", "hanja": "丙", "yinYang": "yang", "element": "fire" },
+  { "id": 3, "ko": "정", "hanja": "丁", "yinYang": "yin", "element": "fire" },
+  { "id": 4, "ko": "무", "hanja": "戊", "yinYang": "yang", "element": "earth" },
+  { "id": 5, "ko": "기", "hanja": "己", "yinYang": "yin", "element": "earth" },
+  { "id": 6, "ko": "경", "hanja": "庚", "yinYang": "yang", "element": "metal" },
+  { "id": 7, "ko": "신", "hanja": "辛", "yinYang": "yin", "element": "metal" },
+  { "id": 8, "ko": "임", "hanja": "壬", "yinYang": "yang", "element": "water" },
+  { "id": 9, "ko": "계", "hanja": "癸", "yinYang": "yin", "element": "water" }
+]

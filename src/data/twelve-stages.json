@@ -1,0 +1,16 @@
+{
+  "_note": "12운성. 양간은 장생지에서 지지 순행(+1), 음간은 역행(-1). 무·기는 화토동궁(병·정과 같은 장생지) 방식 적용. 수토동궁 방식은 옵션으로 추가 예정.",
+  "stages": ["장생", "목욕", "관대", "건록", "제왕", "쇠", "병", "사", "묘", "절", "태", "양"],
+  "byStem": [
+    { "stem": 0, "longLifeBranch": 11, "direction": 1 },
+    { "stem": 1, "longLifeBranch": 6, "direction": -1 },
+    { "stem": 2, "longLifeBranch": 2, "direction": 1 },
+    { "stem": 3, "longLifeBranch": 9, "direction": -1 },
+    { "stem": 4, "longLifeBranch": 2, "direction": 1 },
+    { "stem": 5, "longLifeBranch": 9, "direction": -1 },
+    { "stem": 6, "longLifeBranch": 5, "direction": 1 },
+    { "stem": 7, "longLifeBranch": 0, "direction": -1 },
+    { "stem": 8, "longLifeBranch": 8, "direction": 1 },
+    { "stem": 9, "longLifeBranch": 3, "direction": -1 }
+  ]
+}

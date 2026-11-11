@@ -1,0 +1,848 @@
+/*
+ * 디자인 토큰. 오행 5색은 dataviz 검증기로 라이트·다크 양쪽 통과를 확인한 조합이다
+ * (목 초록 > 화 빨강 > 토 보라 > 금 분홍 > 수 파랑, 인접 쌍 기준).
+ * 색은 항상 오행 이름 텍스트와 함께 쓴다 (색만으로 구분하지 않는다).
+ */
+:root {
+  color-scheme: light dark;
+  --surface-1: #fcfcfb;
+  --surface-2: #f3f2ef;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #6b6a65;
+  --line: #d9d8d2;
+  --accent: #2a78d6;
+  /* 흰 글자를 올리는 채움 색: 흰 글자 대비 5.39 (WCAG AA 4.5 이상). 라이트·다크 공통 */
+  --accent-fill: #256abf;
+  --danger: #b3261e;
+  --warn-bg: #fff4d6;
+  --warn-line: #e0b100;
+
+  --el-wood: #008300;
+  --el-fire: #e34948;
+  --el-earth: #6250d6;
+  --el-metal: #e87ba4;
+  --el-water: #2a78d6;
+
+  font-family: system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  line-height: 1.5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-1: #1a1a19;
+    --surface-2: #242422;
+    --text-primary: #f0efec;
+    --text-secondary: #c3c2b7;
+    --text-muted: #a3a29b;
+    --line: #383835;
+    --accent: #3987e5;
+    --danger: #f2b8b5;
+    --warn-bg: #3a3118;
+    --warn-line: #c98500;
+
+    --el-wood: #008300;
+    --el-fire: #e66767;
+    --el-earth: #9085e9;
+    --el-metal: #d55181;
+    --el-water: #3987e5;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--surface-1);
+  color: var(--text-primary);
+}
+
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  margin: 0 0 4px;
+}
+
+h2 {
+  font-size: 1.15rem;
+  margin: 32px 0 12px;
+}
+
+.lead {
+  margin: 0 0 20px;
+  color: var(--text-secondary);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.hanja {
+  font-family: 'Noto Serif KR', 'Songti SC', 'Apple Myungjo', 'Batang', serif;
+}
+
+/* ───── 폼 ───── */
+.card {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.form-grid {
+  display: grid;
+  gap: 12px 16px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+legend,
+.field > label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  padding: 0;
+}
+
+input[type='number'],
+input[type='text'],
+select {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  font: inherit;
+  color: inherit;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+input:focus-visible,
+select:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+.bar-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+}
+
+.row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+}
+
+.ymd {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 8px;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.primary {
+  min-height: 44px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent-fill);
+  color: #fff;
+  font-weight: 600;
+}
+
+.ghost {
+  min-height: 36px;
+  padding: 0 12px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.ghost[aria-pressed='true'] {
+  background: var(--surface-1);
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.error {
+  margin: 12px 0 0;
+  color: var(--danger);
+  font-weight: 600;
+}
+
+details.options {
+  margin-top: 16px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+details.options summary {
+  cursor: pointer;
+  color: var(--text-secondary);
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+.help {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+}
+
+.privacy {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 12px 0 0;
+}
+
+/* ───── 경고 ───── */
+.warnings {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+  display: grid;
+  gap: 8px;
+}
+
+.warnings li {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-line);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+/* ───── 결과 요약 ───── */
+.summary {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.meta {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* ───── 명식표 ───── */
+.table-wrap {
+  overflow-x: auto;
+}
+
+table.pillars {
+  width: 100%;
+  min-width: 320px;
+  border-collapse: separate;
+  border-spacing: 4px;
+  table-layout: fixed;
+  text-align: center;
+}
+
+table.pillars th[scope='row'] {
+  width: 58px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-align: left;
+  padding-right: 4px;
+}
+
+table.pillars thead th {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 4px 0 6px;
+}
+
+table.pillars thead td {
+  background: transparent;
+}
+
+table.pillars td {
+  padding: 6px 2px;
+  border-radius: 6px;
+  vertical-align: middle;
+  background: var(--surface-2);
+  font-size: 0.85rem;
+}
+
+td.el {
+  --c: var(--surface-2);
+  background: color-mix(in srgb, var(--c) 16%, var(--surface-1));
+  border-left: 4px solid var(--c);
+}
+
+td.el[data-el='wood'] { --c: var(--el-wood); }
+td.el[data-el='fire'] { --c: var(--el-fire); }
+td.el[data-el='earth'] { --c: var(--el-earth); }
+td.el[data-el='metal'] { --c: var(--el-metal); }
+td.el[data-el='water'] { --c: var(--el-water); }
+
+td.big .glyph {
+  display: block;
+  font-size: 1.9rem;
+  line-height: 1.15;
+}
+
+td.big .ko {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+td.missing {
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px dashed var(--line);
+}
+
+.hidden-list {
+  display: grid;
+  gap: 2px;
+  font-size: 0.78rem;
+}
+
+.hidden-list small {
+  color: var(--text-muted);
+}
+
+.tag-void {
+  display: inline-block;
+  padding: 0 6px;
+  border: 1px solid var(--text-muted);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.day-master {
+  font-weight: 700;
+}
+
+/* ───── 오행 차트 ───── */
+.chart-head {
+  margin-top: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.chart-head h2 {
+  margin: 0;
+}
+
+.toggle {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.bars {
+  display: grid;
+  gap: 8px;
+}
+
+.bar-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 52px 1fr 90px;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  border-radius: 6px;
+}
+
+.bar-label {
+  font-size: 0.9rem;
+}
+
+.bar-track {
+  height: 14px;
+}
+
+.bar-fill {
+  height: 100%;
+  min-width: 0;
+  border-radius: 0 4px 4px 0;
+  background: var(--c);
+}
+
+.bar-row[data-el='wood'] { --c: var(--el-wood); }
+.bar-row[data-el='fire'] { --c: var(--el-fire); }
+.bar-row[data-el='earth'] { --c: var(--el-earth); }
+.bar-row[data-el='metal'] { --c: var(--el-metal); }
+.bar-row[data-el='water'] { --c: var(--el-water); }
+
+.bar-value {
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.bar-value small {
+  color: var(--text-muted);
+}
+
+.tip {
+  display: none;
+  position: absolute;
+  z-index: 2;
+  left: 60px;
+  top: 100%;
+  margin-top: 2px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.18);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.bar-row:hover .tip,
+.bar-row:focus-visible .tip {
+  display: block;
+}
+
+table.plain {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+table.plain th,
+table.plain td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+}
+
+table.plain th:first-child,
+table.plain td:first-child {
+  text-align: left;
+}
+
+/* ───── 대운 ───── */
+.daeun-scroll {
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+ol.daeun {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 8px;
+}
+
+ol.daeun li {
+  flex: 0 0 88px;
+}
+
+.daeun-card {
+  width: 100%;
+  padding: 8px 4px;
+  text-align: center;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: inherit;
+}
+
+.daeun-card[aria-pressed='true'] {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.daeun-card .age {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.daeun-card .glyph {
+  display: block;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.daeun-card .sub {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.now-tag {
+  display: inline-block;
+  margin-top: 2px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--accent-fill);
+  color: #fff;
+  font-size: 0.7rem;
+}
+
+ul.seun {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+ul.seun li {
+  border-radius: 8px;
+}
+
+.seun-card {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.8rem;
+  background: var(--surface-2);
+  color: inherit;
+}
+
+ul.seun li[data-now='true'] .seun-card {
+  border-color: var(--text-muted);
+  border-style: dashed;
+}
+
+.seun-card[aria-pressed='true'] {
+  border-color: var(--accent);
+  border-style: solid;
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+ul.seun .glyph {
+  display: block;
+  font-size: 1.2rem;
+}
+
+footer.disclaimer {
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+@media (min-width: 640px) {
+  ul.seun {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  table.pillars th[scope='row'] {
+    width: 80px;
+    font-size: 0.8rem;
+  }
+
+  table.pillars td {
+    font-size: 0.95rem;
+  }
+}
+
+/* ───── 분석 ───── */
+.meter {
+  position: relative;
+  height: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  background: var(--accent);
+}
+
+.meter-tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--text-muted);
+}
+
+.meter-scale {
+  position: relative;
+  height: 18px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.meter-scale span {
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  background: var(--surface-2);
+}
+
+.badge[data-on='true'] {
+  border-color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.cards {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.cards h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.reading p {
+  margin: 0 0 6px;
+}
+
+.basis {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+ol.candidates,
+ul.notes {
+  margin: 6px 0 0;
+  padding-left: 20px;
+}
+
+ul.chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+ul.chips li {
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 0.9rem;
+}
+
+table.relations td.place {
+  text-align: left;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+table.relations th[scope='row'] small {
+  font-weight: 400;
+}
+
+/* 관계 표: 열 정렬을 왼쪽으로 통일하고 짧은 열은 줄바꿈하지 않는다 */
+table.relations th,
+table.relations td {
+  text-align: left;
+}
+
+table.relations th:nth-child(2),
+table.relations td:nth-child(2),
+table.relations th:nth-child(4),
+table.relations td:nth-child(4) {
+  white-space: nowrap;
+}
+
+/* 좁은 화면: 관계 이름에 종류(합·충·해 등)가 이미 들어 있어 종류 열은 숨긴다 */
+@media (max-width: 519px) {
+  table.relations th:nth-child(2),
+  table.relations td:nth-child(2) {
+    display: none;
+  }
+}
+
+/* ───── 자미두수 명반 ─────
+ * 좁은 화면: 명궁부터 차례로 목록. 넓은 화면: 지지 자리에 4×4 격자로 배치하고 가운데 2×2에 요약.
+ */
+.zw-board {
+  display: grid;
+  gap: 8px;
+}
+
+ol.zw-palaces {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.zw-palace {
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-2);
+  font-size: 0.85rem;
+  min-width: 0;
+}
+
+.zw-palace[data-soul='true'] {
+  border-color: var(--text-secondary);
+  border-width: 2px;
+}
+
+.zw-palace[data-current='true'] {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.zw-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.zw-tag {
+  padding: 0 6px;
+  border: 1px solid var(--text-muted);
+  border-radius: 999px;
+  font-size: 0.7rem;
+}
+
+ul.zw-stars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+}
+
+.zw-main {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.zw-main .hanja {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+.zw-aux {
+  color: var(--text-secondary);
+}
+
+.zw-malefic {
+  color: var(--text-muted);
+}
+
+.zw-empty {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.zw-sihua {
+  display: inline-block;
+  margin-left: 3px;
+  padding: 0 4px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.zw-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.zw-center {
+  /* 좁은 화면에서는 요약을 12궁 목록보다 먼저 보여준다 (넓은 화면은 격자 가운데) */
+  order: -1;
+  padding: 12px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.zw-center p {
+  margin: 0 0 4px;
+}
+
+@media (min-width: 720px) {
+  .zw-board {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-areas:
+      'b5 b6 b7 b8'
+      'b4 c c b9'
+      'b3 c c b10'
+      'b2 b1 b0 b11';
+  }
+
+  /* 목록 자체는 격자에서 사라지고 각 궁이 바깥 격자의 칸을 차지한다 */
+  ol.zw-palaces {
+    display: contents;
+  }
+
+  /* 넓은 화면에서만 지지 자리(b0~b11)에 배치한다. 좁은 화면 목록에서는 순서대로 쌓인다 */
+  .zw-palace {
+    grid-area: var(--area);
+  }
+
+  .zw-center {
+    grid-area: c;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+}
