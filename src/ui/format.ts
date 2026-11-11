@@ -14,5 +14,5 @@ export function describeClock(chart: SajuChart): string {
   const c = new Date(wall + correctionMinutes * 60_000)
   const clockText = `${c.getUTCFullYear()}-${pad(c.getUTCMonth() + 1)}-${pad(c.getUTCDate())} ${pad(c.getUTCHours())}:${pad(c.getUTCMinutes())}`
   const sign = correctionMinutes > 0 ? '+' : '−'
-  return `입력 시각 ${wallText} → 일주·시주 계산 시각 ${clockText} (보정 ${sign}${Math.abs(correctionMinutes)}분)`
+  return `입력 시각 ${wallText} → 날·시 글자 계산 시각 ${clockText} (보정 ${sign}${Math.abs(correctionMinutes)}분)`
 }

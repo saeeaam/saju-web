@@ -13,6 +13,18 @@ export const ELEMENT_KO: Record<Element, string> = {
   water: '수',
 }
 
+/** 오행의 쉬운 이름 */
+export const ELEMENT_PLAIN: Record<Element, string> = {
+  wood: '나무',
+  fire: '불',
+  earth: '흙',
+  metal: '쇠',
+  water: '물',
+}
+
+/** 예: 나무(목) */
+export const elementText = (e: Element) => `${ELEMENT_PLAIN[e]}(${ELEMENT_KO[e]})`
+
 export const ELEMENT_HANJA: Record<Element, string> = {
   wood: '木',
   fire: '火',
@@ -23,13 +35,13 @@ export const ELEMENT_HANJA: Record<Element, string> = {
 
 export const WARNING_TEXT: Record<WarningCode, string> = {
   PRE_1908_LMT:
-    '1908년 4월 이전은 표준시 도입 전입니다. 입력한 시각을 한국 표준시(UTC+9)로 간주해 계산했습니다. 지방시를 반영하려면 계산 기준에서 "출생지 경도"로 보정하세요.',
+    '1908년 4월 이전에는 지금 같은 표준 시각이 없었습니다. 입력한 시각을 지금의 한국 시각으로 보고 계산했습니다. 태어난 곳의 실제 해 시각을 반영하려면 계산 기준에서 "태어난 곳 경도로 보정"을 고르세요.',
   NEAR_TERM_BOUNDARY:
-    '절기가 바뀌는 시각(절입) 전후 1시간 이내입니다. 연주·월주가 달라질 수 있으니 출생 시각을 다시 확인하세요.',
-  TERM_DAY_NO_TIME: '출생 시각을 몰라서, 절기가 바뀌는 날의 월주(·연주)를 확정할 수 없습니다.',
+    '태어난 시각이 달이 바뀌는 절기 시각과 1시간 이내로 가깝습니다. 태어난 해·달의 글자가 달라질 수 있으니 출생 시각을 다시 확인하세요.',
+  TERM_DAY_NO_TIME: '태어난 시각을 몰라, 절기로 달이 바뀌는 날의 글자를 하나로 정할 수 없습니다.',
   ZI_HOUR_BOUNDARY:
-    '23시~01시 출생은 자시 처리 기준(야자시·조자시)에 따라 일주와 시주가 달라집니다. 계산 기준에서 확인하세요.',
-  HISTORICAL_TIME_ADJUSTED: '당시의 표준시·서머타임 규칙에 따라 시각이 보정되었습니다.',
+    '밤 11시~새벽 1시 출생은 날짜를 언제 바꾸는지에 따라 날과 시의 글자가 달라집니다. 계산 기준에서 확인하세요.',
+  HISTORICAL_TIME_ADJUSTED: '태어난 시절의 시간 제도(서머타임 등)에 맞춰 시각을 보정했습니다.',
 }
 
 export interface Place {
@@ -57,41 +69,41 @@ export const PLACES: Place[] = [
 
 export const DAY_BOUNDARY_LABEL: Record<DayBoundary, { name: string; help: string }> = {
   midnight: {
-    name: '자정에 날짜 변경 (야자시·조자시 구분)',
-    help: '23:00~23:59는 당일 일간으로, 00:00~00:59는 다음날 일간으로 시주를 정합니다.',
+    name: '자정에 날짜를 바꿈 (기본)',
+    help: '밤 11시~자정은 그날로, 자정~새벽 1시는 다음 날로 봅니다. (야자시·조자시 구분)',
   },
   'zi-hour-start': {
-    name: '23시부터 다음날 (정자시)',
-    help: '23:00부터 일주가 다음날로 바뀌고 시주도 다음날 일간 기준입니다.',
+    name: '밤 11시에 날짜를 바꿈',
+    help: '밤 11시부터 다음 날로 봅니다. (정자시)',
   },
   'split-zi': {
-    name: '일주는 당일, 시주는 다음날 일간 기준',
-    help: '23:00~23:59에 일주는 당일로 두고, 시주의 천간만 다음날 일간으로 정합니다.',
+    name: '날짜는 그대로, 시간 글자만 다음 날 기준',
+    help: '밤 11시~자정에 날의 글자는 그날로 두고, 시의 글자만 다음 날 기준으로 정합니다.',
   },
 }
 
 export const YEAR_BOUNDARY_LABEL: Record<YearBoundary, string> = {
-  ipchun: '입춘 기준',
-  'lunar-new-year': '음력 설(1월 1일) 기준',
+  ipchun: '입춘(2월 4일 무렵)에 해가 바뀜 (기본)',
+  'lunar-new-year': '음력 설날에 해가 바뀜',
 }
 
 export const SOLAR_TIME_LABEL: Record<SolarTimeCorrection, string> = {
-  none: '보정 없음 (표준시 그대로)',
-  longitude: '출생지 경도로 보정 (진태양시)',
-  'fixed-30': '일률 −30분',
+  none: '보정하지 않음 (기본)',
+  longitude: '태어난 곳 경도로 보정',
+  'fixed-30': '일률적으로 30분 빼기',
 }
 
 export const EARTH_STAGE_LABEL: Record<EarthStageRule, string> = {
-  'fire-earth': '화토동궁 (무·기가 병·정과 같음)',
-  'water-earth': '수토동궁 (무·기가 임·계와 같음)',
+  'fire-earth': '흙을 불과 같이 봄 (기본)',
+  'water-earth': '흙을 물과 같이 봄',
 }
 
 export const DAEUN_AGE_LABEL: Record<DaeunAgeFormat, string> = {
-  precise: '년·개월 단위로 정밀하게',
-  integer: '정수 나이 (반올림)',
+  precise: '몇 세 몇 개월까지 (기본)',
+  integer: '정수 나이로 반올림',
 }
 
 export const LEAP_RULE_LABEL: Record<LeapMonthRule, string> = {
-  'split-15': '15일까지 그 달, 16일부터 다음 달로',
+  'split-15': '15일까지 그 달, 16일부터 다음 달로 (기본)',
   'as-is': '윤달을 그 달로 그대로',
 }
