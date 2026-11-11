@@ -261,6 +261,7 @@ details.options summary {
 
 /* ───── 명식표 ───── */
 .table-wrap {
+  position: relative;
   overflow-x: auto;
 }
 
@@ -458,6 +459,9 @@ table.plain td:first-child {
 
 /* ───── 대운 ───── */
 .daeun-scroll {
+  /* 화면 밖 글자(.sr-only, position:absolute)가 이 스크롤 영역 안에 머물도록 기준을 둔다.
+     없으면 문서 기준으로 배치되어 페이지 전체에 가로 스크롤이 생긴다 */
+  position: relative;
   overflow-x: auto;
   padding-bottom: 8px;
 }
