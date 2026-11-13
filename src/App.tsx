@@ -7,6 +7,14 @@ import { DEFAULT_OPTIONS } from './types/options.ts'
 import type { SajuOptions } from './types/options.ts'
 import { AnalysisPanel } from './ui/AnalysisPanel.tsx'
 import { CategoryPanel } from './ui/CategoryPanel.tsx'
+import { MonthlyPanel } from './ui/MonthlyPanel.tsx'
+import { OverviewCard } from './ui/OverviewCard.tsx'
+import { extractFeatures } from './core/features.ts'
+import { analyzeChart } from './core/insight.ts'
+import { buildMonthly } from './core/monthly.ts'
+import { buildOverview } from './core/overview.ts'
+import { buildCategoryReadings } from './core/reading.ts'
+import { ziweiFromChart } from './core/ziwei-from-chart.ts'
 import { DaeunTimeline } from './ui/DaeunTimeline.tsx'
 import { ElementChart } from './ui/ElementChart.tsx'
 import { InputForm } from './ui/InputForm.tsx'
@@ -97,6 +105,13 @@ function Result({ chart, now }: { chart: SajuChart; now: Date }) {
   const label = { year: '년', month: '월', day: '일', hour: '시' } as const
   const dm = STEMS[chart.dayMaster]
   const dayBranch = BRANCHES[chart.pillars.find((p) => p.key === 'day')!.ganji.branch]
+  // 해석 계산은 한 번만 하고 각 영역에 나눠 준다
+  const reading = useMemo(() => {
+    const features = extractFeatures(chart, analyzeChart(chart), now, ziweiFromChart(chart))
+    const readings = buildCategoryReadings(features)
+    const monthly = buildMonthly(chart, features, now)
+    return { readings, monthly, overview: buildOverview(features, readings, monthly) }
+  }, [chart, now])
 
   return (
     <>
@@ -114,6 +129,8 @@ function Result({ chart, now }: { chart: SajuChart; now: Date }) {
       </p>
       <p className="meta">{describeClock(chart)}</p>
 
+      <OverviewCard lines={reading.overview} />
+
       {chart.warnings.length > 0 && (
         <ul className="warnings" aria-label="확인이 필요한 사항">
           {chart.warnings.map((w) => (
@@ -128,7 +145,8 @@ function Result({ chart, now }: { chart: SajuChart; now: Date }) {
       <div style={{ marginTop: 16 }}>
         <PillarTable chart={chart} />
       </div>
-      <CategoryPanel chart={chart} now={now} />
+      <CategoryPanel readings={reading.readings} />
+      <MonthlyPanel monthly={reading.monthly} />
       <ElementChart chart={chart} />
       <AnalysisPanel chart={chart} />
       <DaeunTimeline chart={chart} now={now} />

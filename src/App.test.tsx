@@ -192,6 +192,8 @@ describe('쉬운 말과 전문 용어', () => {
       screen.getByRole('region', { name: /^10년 흐름과 해마다의 흐름/ }),
       screen.getByRole('region', { name: /^자미두수/ }),
       screen.getByRole('region', { name: '사주 풀이' }),
+      screen.getByRole('region', { name: '한눈에 보기' }),
+      screen.getByRole('region', { name: /^올해 월별 흐름/ }),
     ]
     // 펼침 패널(계산 근거)도 열어서 검사한다
     await user.click(screen.getByText('계산 근거 (자리별 비중)'))
@@ -451,5 +453,40 @@ describe('자미두수 화면', () => {
     await user.selectOptions(screen.getByLabelText('자미두수: 윤달 처리'), 'as-is')
     expect(section.textContent).toContain('운명도에서는 4월로 계산')
     expect(section.textContent).toMatch(/나 자신 칸\s*인 자리/)
+  })
+})
+
+describe('한눈에 보기와 월별 흐름', () => {
+  it('한눈에 보기: 사주 요약 바로 아래에 성향·강점·올해와 이번 달 세 줄', async () => {
+    await show1992()
+    const card = screen.getByRole('region', { name: '한눈에 보기' })
+    const terms = [...card.querySelectorAll('dt')].map((d) => d.textContent)
+    expect(terms).toEqual(['나의 성향', '강점', '올해·이번 달'])
+    expect(card.textContent).toContain('계(물) · 기운은 균형')
+    expect(card.textContent).toContain('이번 달은 책임과 일정이 늘기 쉬운 달로 봅니다')
+    // 위치: 명식표보다 위
+    const table = screen.getByRole('table', { name: /사주 명식표/ })
+    expect(card.compareDocumentPosition(table) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
+
+  it('월별 흐름: 2026년 12개월, 이번 달(기해월, 11월 7일부터)에 표시', async () => {
+    await show1992()
+    const section = screen.getByRole('region', { name: '올해 월별 흐름 (2026년)' })
+    const items = within(within(section).getByRole('list', { name: '월별 흐름' })).getAllByRole('listitem').filter((li) => li.classList.contains('month'))
+    expect(items).toHaveLength(12)
+    expect(items[0].textContent).toMatch(/^2월 4일부터/)
+    const current = items.filter((li) => li.getAttribute('data-current') === 'true')
+    expect(current).toHaveLength(1)
+    expect(current[0].textContent).toContain('이번 달')
+    expect(current[0].textContent).toContain('기해')
+    expect(current[0].textContent).toMatch(/^11월 7일부터/)
+  })
+
+  it('월별 흐름: 손풀이대로 신묘월은 "변화", 무술월은 "화합"과 "작은 오해 주의"', async () => {
+    await show1992()
+    const section = screen.getByRole('region', { name: /^올해 월별 흐름/ })
+    const byGanji = (g: string) => [...section.querySelectorAll('li.month')].find((li) => li.textContent?.includes(g))!
+    expect([...byGanji('신묘').querySelectorAll('.month-tags li')].map((x) => x.textContent)).toEqual(['변화'])
+    expect([...byGanji('무술').querySelectorAll('.month-tags li')].map((x) => x.textContent)).toEqual(['화합', '작은 오해 주의'])
   })
 })

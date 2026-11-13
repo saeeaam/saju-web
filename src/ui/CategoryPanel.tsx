@@ -1,10 +1,4 @@
-import { useMemo } from 'react'
-import { extractFeatures } from '../core/features.ts'
-import type { SajuChart } from '../core/index.ts'
-import { analyzeChart } from '../core/insight.ts'
-import { buildCategoryReadings } from '../core/reading.ts'
 import type { CategoryReading, Line } from '../core/reading.ts'
-import { ziweiFromChart } from '../core/ziwei-from-chart.ts'
 import { Label } from './Label.tsx'
 
 function Lines({ title, icon, lines, className }: { title: string; icon: string; lines: Line[]; className: string }) {
@@ -59,12 +53,7 @@ function Category({ r, open }: { r: CategoryReading; open: boolean }) {
 }
 
 /** 카테고리별 사주 풀이. 규칙 기반이며 같은 입력이면 항상 같은 결과 */
-export function CategoryPanel({ chart, now }: { chart: SajuChart; now: Date }) {
-  const readings = useMemo(() => {
-    const features = extractFeatures(chart, analyzeChart(chart), now, ziweiFromChart(chart))
-    return buildCategoryReadings(features)
-  }, [chart, now])
-
+export function CategoryPanel({ readings }: { readings: CategoryReading[] }) {
   return (
     <section aria-labelledby="reading-title">
       <h2 id="reading-title">사주 풀이</h2>
