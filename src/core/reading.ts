@@ -66,11 +66,11 @@ export const GROUP_PLAIN: Record<Group, string> = {
 }
 
 const GROUP_THEME: Record<Group, string> = {
-  비겁: '사람·경쟁·독립',
-  식상: '표현·활동·새로운 시도',
-  재성: '돈·현실 문제·성과',
-  관성: '책임·직장·평가',
-  인성: '배움·준비·도움',
+  비겁: '동료·친구와의 일이나 독립',
+  식상: '새로운 시도와 표현',
+  재성: '돈과 일의 성과',
+  관성: '직장의 책임과 평가',
+  인성: '공부와 준비',
 }
 
 const ELEMENT_PLAIN: Record<Element, string> = { wood: '나무', fire: '불', earth: '흙', metal: '쇠', water: '물' }
@@ -598,26 +598,18 @@ function health(f: ReadingFeatures): CategoryReading {
 }
 
 function flow(f: ReadingFeatures): CategoryReading {
-  const summary = f.daeun
-    ? `지금은 ${Math.floor(f.daeun.startAge)}세부터 이어지는 10년 흐름(${ganjiName(f.daeun.ganji)}) 안에 있습니다.`
+  const decadeRange = f.daeun ? `${Math.floor(f.daeun.startAge)}~${Math.floor(f.daeun.startAge) + 9}세` : ''
+  const summary = f.daeun && f.flow.daeun
+    ? `지금은 ${decadeRange}, ${으로로(`'${f.flow.daeun.title}'`)} 보는 시기에 있습니다.`
     : '아직 첫 10년 흐름이 시작되기 전입니다.'
 
+  // 시기: 흐름 풀이의 제목과 첫 문장을 그대로 쓴다 (흐름 화면과 같은 내용)
   const timing: Line[] = []
-  if (f.daeun) {
-    timing.push({
-      id: `f-daeun-${f.daeun.stemGroup}-${f.daeun.branchGroup}`,
-      text:
-        f.daeun.stemGroup === f.daeun.branchGroup
-          ? `지금의 10년 흐름은 ${이가(`'${GROUP_THEME[f.daeun.stemGroup]}'`)} 겉과 바탕 모두에서 중심 주제가 되기 쉽습니다.`
-          : `지금의 10년 흐름은 ${이가(`'${GROUP_THEME[f.daeun.stemGroup]}'`)} 겉으로 드러나는 주제이고, ${이가(`'${GROUP_THEME[f.daeun.branchGroup]}'`)} 바탕에 깔린 흐름으로 봅니다.`,
-    })
+  if (f.flow.daeun) {
+    timing.push({ id: `f-daeun-${f.flow.daeun.stemGroup}`, text: `지금의 10년(${decadeRange}) · ${f.flow.daeun.title}: ${f.flow.daeun.body[0]}` })
   }
-  timing.push({ id: `f-this-${f.thisYear.stemGroup}`, text: `${f.thisYear.year}년(${ganjiName(f.thisYear.ganji)})에는 ${과와(`'${GROUP_THEME[f.thisYear.stemGroup]}'`)} 관련된 일이 두드러지기 쉽습니다.` })
-  timing.push(
-    f.nextYear.stemGroup === f.thisYear.stemGroup
-      ? { id: `f-next-${f.nextYear.stemGroup}-same`, text: `${f.nextYear.year}년(${ganjiName(f.nextYear.ganji)})에도 ${이가(`'${GROUP_THEME[f.nextYear.stemGroup]}'`)} 주제인 흐름이 이어지기 쉽습니다.` }
-      : { id: `f-next-${f.nextYear.stemGroup}`, text: `${f.nextYear.year}년(${ganjiName(f.nextYear.ganji)})에는 ${과와(`'${GROUP_THEME[f.nextYear.stemGroup]}'`)} 관련된 일로 관심이 옮겨 가기 쉽습니다.` },
-  )
+  timing.push({ id: `f-this-${f.flow.thisYear.stemGroup}`, text: `${f.thisYear.year}년(올해) · ${f.flow.thisYear.title}: ${f.flow.thisYear.body[0]}` })
+  timing.push({ id: `f-next-${f.flow.nextYear.stemGroup}`, text: `${f.nextYear.year}년 · ${f.flow.nextYear.title}: ${f.flow.nextYear.body[0]}` })
 
   // 어느 기준으로 도움이 되는지 함께 밝힌다 (균형 기준·계절 기준은 서로 다를 수 있다)
   const helpfulBasis = (e: Element) =>

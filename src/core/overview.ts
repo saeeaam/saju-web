@@ -5,7 +5,7 @@
 import { STEMS } from '../data/index.ts'
 import type { ReadingFeatures } from './features.ts'
 import { ganjiName } from './ganji.ts'
-import { 이가 } from './josa.ts'
+import { 으로로 } from './josa.ts'
 import type { MonthlyReading } from './monthly.ts'
 import type { CategoryReading } from './reading.ts'
 
@@ -16,14 +16,6 @@ export interface OverviewLine {
 
 const ELEMENT_PLAIN = { wood: '나무', fire: '불', earth: '흙', metal: '쇠', water: '물' } as const
 const STRENGTH_PLAIN = { 신강: '강한 편', 신약: '약한 편', 중화: '균형' } as const
-
-const THEME: Record<string, string> = {
-  비겁: '사람·경쟁·독립',
-  식상: '표현·활동·새로운 시도',
-  재성: '돈·현실 문제·성과',
-  관성: '책임·직장·평가',
-  인성: '배움·준비·도움',
-}
 
 /** 문장 끝 "~편입니다." → 요약에 맞게 그대로 쓴다. 첫 문장만 잘라 쓴다 */
 function firstSentence(text: string): string {
@@ -45,7 +37,7 @@ export function buildOverview(f: ReadingFeatures, readings: CategoryReading[], m
   if (strength) lines.push({ label: '강점', text: strength.text })
 
   const current = monthly.months.find((m) => m.isCurrent)
-  const year = `${f.thisYear.year}년(${ganjiName(f.thisYear.ganji)})은 ${이가(`'${THEME[f.thisYear.stemGroup]}'`)} 중심 주제가 되기 쉽습니다.`
+  const year = `${f.thisYear.year}년(${ganjiName(f.thisYear.ganji)})은 ${으로로(`'${f.flow.thisYear.title}'`)} 봅니다.`
   const month = current ? ` 이번 달은 ${current.theme.replace(/ 달입니다\.$/, ' 달로 봅니다.')}` : ''
   lines.push({ label: '올해·이번 달', text: year + month })
 

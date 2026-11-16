@@ -15,6 +15,8 @@ import type { ShinsalName } from './shinsal.ts'
 import type { StrengthLabel } from './strength.ts'
 import type { ZiweiResult } from './ziwei-from-chart.ts'
 import type { Ganji } from './ganji.ts'
+import { buildFlowReading } from './flow-reading.ts'
+import type { FlowReading } from './flow-reading.ts'
 
 export type Group = '비겁' | '식상' | '재성' | '관성' | '인성'
 export const GROUPS: Group[] = ['비겁', '식상', '재성', '관성', '인성']
@@ -76,6 +78,8 @@ export interface ReadingFeatures {
   /** 올해와 내년의 흐름 */
   thisYear: LuckFeature & { year: number }
   nextYear: LuckFeature & { year: number }
+  /** 흐름 풀이: 지금의 10년, 올해, 내년이 내 사주에 어떻게 작용하는지 */
+  flow: { daeun: FlowReading | null; thisYear: FlowReading; nextYear: FlowReading }
   /** 자미두수 칸별 큰 별·사화, 현재 대한의 칸 이름 */
   ziwei: {
     palaces: Record<string, { main: string[]; others: string[]; sihua: { star: string; type: string }[] }>
@@ -166,7 +170,7 @@ export function extractFeatures(chart: SajuChart, insight: Insight, now: Date, z
     ziweiFeature = { palaces, currentDecadePalace }
   }
 
-  return {
+  const base: Omit<ReadingFeatures, 'flow'> = {
     gender,
     dayStem,
     dayElement: STEMS[dayStem].element,
@@ -199,6 +203,14 @@ export function extractFeatures(chart: SajuChart, insight: Insight, now: Date, z
     thisYear: { ...luckFeature(chart, seunPillar(thisYearNum), 'seun'), year: thisYearNum },
     nextYear: { ...luckFeature(chart, seunPillar(thisYearNum + 1), 'seun'), year: thisYearNum + 1 },
     ziwei: ziweiFeature,
+  }
+  return {
+    ...base,
+    flow: {
+      daeun: base.daeun ? buildFlowReading(chart, base, base.daeun.ganji, 'decade') : null,
+      thisYear: buildFlowReading(chart, base, base.thisYear.ganji, 'year'),
+      nextYear: buildFlowReading(chart, base, base.nextYear.ganji, 'year'),
+    },
   }
 }
 

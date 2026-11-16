@@ -116,10 +116,13 @@ describe('카테고리 해석: 1992 손풀이 기대 문장', () => {
     expect(r.note).toContain('진단이 아닙니다')
   })
 
-  it('흐름: 계축 10년 흐름과 2026·2027년 문장, 자미두수는 집·부동산 칸', () => {
+  it('흐름: 지금 24~33세(내 힘으로 서려는 10년), 2026·2027년 제목과 첫 문장, 자미두수는 집·부동산 칸', () => {
     const r = byId(rs, 'flow')
-    expect(r.summary).toContain('계축')
-    expect(r.timing.map((t) => t.text).join(' ')).toMatch(/2026년\(병오\).*2027년\(정미\)/)
+    expect(r.summary).toBe("지금은 24~33세, '내 힘으로 서려는 10년'으로 보는 시기에 있습니다.")
+    const t = r.timing.map((x) => x.text)
+    expect(t[0]).toMatch(/^지금의 10년\(24~33세\) · 내 힘으로 서려는 10년: /)
+    expect(t[1]).toMatch(/^2026년\(올해\) · 돈과 성과의 해: 돈을 벌고 관리하는 일/)
+    expect(t[2]).toMatch(/^2027년 · 돈과 성과의 해: /)
     expect(r.ziwei).toContain("'집·부동산' 칸")
   })
 })
@@ -304,13 +307,15 @@ describe('시기 문장 합치기와 반복 방지', () => {
     }
   })
 
-  it('흐름: 내년 주제가 올해와 같으면 "이어지기", 다르면 "옮겨 가기"', () => {
+  it('흐름 카드의 시기 문장은 흐름 풀이(features.flow)의 제목·첫 문장과 같다 (화면 간 일관성)', () => {
     for (const s of randomInputs(300, 5)) {
-      const f = read(s).features
-      const flow = read(s).readings.find((r) => r.id === 'flow')!
-      const next = flow.timing.at(-1)!.text
-      if (f.nextYear.stemGroup === f.thisYear.stemGroup) expect(next).toContain('이어지기')
-      else expect(next).toContain('옮겨 가기')
+      const { features: f, readings } = read(s)
+      const flow = readings.find((r) => r.id === 'flow')!
+      const t = flow.timing.map((x) => x.text)
+      const last = t.at(-1)!
+      expect(last).toContain(f.flow.nextYear.title)
+      expect(last).toContain(f.flow.nextYear.body[0])
+      if (f.flow.daeun) expect(t[0]).toContain(f.flow.daeun.title)
     }
   })
 })

@@ -49,7 +49,8 @@ export default function App({ now }: { now?: Date }) {
   // 현재 시각은 화면이 처음 만들어질 때 한 번만 정한다 (렌더마다 바뀌지 않게)
   const [currentTime] = useState(() => now ?? new Date())
   // 전문 용어 함께 보기 (기본 켜짐), 용어 설명 창
-  const [showOriginal, setShowOriginal] = useState(true)
+  // 일반인 기준 화면: 전문 용어는 기본으로 숨기고, 원하면 켤 수 있다
+  const [showOriginal, setShowOriginal] = useState(false)
   const [openTerm, setOpenTerm] = useState<TermKey | null>(null)
   const closeTerm = useCallback(() => setOpenTerm(null), [])
   const termContext = useMemo(() => ({ showOriginal, openTerm: setOpenTerm }), [showOriginal])
@@ -111,7 +112,7 @@ function Result({ chart, now, options }: { chart: SajuChart; now: Date; options:
     const features = extractFeatures(chart, analyzeChart(chart), now, ziweiFromChart(chart))
     const readings = buildCategoryReadings(features)
     const monthly = buildMonthly(chart, features, now)
-    return { readings, monthly, overview: buildOverview(features, readings, monthly) }
+    return { features, readings, monthly, overview: buildOverview(features, readings, monthly) }
   }, [chart, now])
 
   return (
@@ -143,16 +144,25 @@ function Result({ chart, now, options }: { chart: SajuChart; now: Date; options:
         </ul>
       )}
 
-      <div style={{ marginTop: 16 }}>
-        <PillarTable chart={chart} />
-      </div>
+      {/* 기본 화면: 풀이 위주 */}
       <CategoryPanel readings={reading.readings} />
+      <DaeunTimeline chart={chart} now={now} features={reading.features} />
       <MonthlyPanel monthly={reading.monthly} />
-      <ElementChart chart={chart} />
-      <AnalysisPanel chart={chart} />
-      <DaeunTimeline chart={chart} now={now} />
-      <ZiweiPanel chart={chart} now={now} />
       <CompatibilityPanel chart={chart} options={options} />
+
+      {/* 전문 영역: 사주를 아는 사람을 위한 계산 결과. 접어 둔다 */}
+      <details className="expert">
+        <summary>
+          <span className="expert-title">전문가용 자세히 보기</span>
+          <span className="help">사주 여덟 글자 표, 다섯 기운, 기운의 세기, 글자 사이 관계, 옛 이름표, 자미두수 운명도</span>
+        </summary>
+        <div style={{ marginTop: 16 }}>
+          <PillarTable chart={chart} />
+        </div>
+        <ElementChart chart={chart} />
+        <AnalysisPanel chart={chart} />
+        <ZiweiPanel chart={chart} now={now} />
+      </details>
     </>
   )
 }

@@ -32,6 +32,9 @@ async function show1992() {
   return user
 }
 
+/** 전문 용어 함께 보기 켜기 (기본은 꺼짐) */
+const showTerms = (user: ReturnType<typeof userEvent.setup>) => user.click(screen.getByLabelText('전문 용어 함께 보기'))
+
 const rowHeaders = (table: HTMLElement) =>
   within(table).getAllByRole('row').slice(1).map((r) => within(r).getAllByRole('rowheader')[0].textContent ?? '')
 
@@ -45,7 +48,7 @@ describe('명식 화면', () => {
     expect(screen.getByText(/입력 시각 2000-01-01 12:00 \(보정 없음\)/)).toBeTruthy()
     const table = screen.getByRole('table', { name: /사주 명식표/ })
     const headers = within(table).getAllByRole('columnheader').map((h) => h.textContent)
-    expect(headers).toEqual(['태어난 시시주', '태어난 날일주', '태어난 달월주', '태어난 해연주'])
+    expect(headers).toEqual(['태어난 시', '태어난 날', '태어난 달', '태어난 해'])
   })
 
   it('잘못된 날짜(2월 30일)는 오류 문장을 보여주고 결과를 만들지 않는다', async () => {
@@ -168,9 +171,11 @@ describe('쉬운 말과 전문 용어', () => {
     '화개', '도화', '순행', '역행', '십성', '12운성', '납음', '일간', '일지', '월지', '연지', '명반',
   ]
 
-  it('전문 용어 함께 보기(기본 켜짐)에서는 쉬운 말 옆에 원래 용어가 작게 붙는다', async () => {
-    await show1992()
-    expect((screen.getByLabelText('전문 용어 함께 보기') as HTMLInputElement).checked).toBe(true)
+  it('전문 용어 함께 보기는 기본 꺼짐(일반인 기준), 켜면 쉬운 말 옆에 원래 용어가 작게 붙는다', async () => {
+    const user = await show1992()
+    expect((screen.getByLabelText('전문 용어 함께 보기') as HTMLInputElement).checked).toBe(false)
+    expect(document.querySelectorAll('.term-orig')).toHaveLength(0)
+    await showTerms(user)
     expect(document.querySelectorAll('.term-orig').length).toBeGreaterThan(30)
     // 연간 임(겁재) → 쉬운 말 "경쟁" + 원래 용어 "겁재"
     const table = screen.getByRole('table', { name: /사주 명식표/ })
@@ -178,9 +183,8 @@ describe('쉬운 말과 전문 용어', () => {
     expect(within(table).getAllByRole('button', { name: /^경쟁/ }).length).toBeGreaterThan(0)
   })
 
-  it('끄면 원래 용어가 사라지고, 결과 화면(사주 풀이 포함)에 전문 용어가 남지 않는다', async () => {
+  it('기본(쉬운 말만) 상태에서 결과 화면 전체에 전문 용어가 남지 않는다', async () => {
     const user = await show1992()
-    await user.click(screen.getByLabelText('전문 용어 함께 보기'))
     expect(document.querySelectorAll('.term-orig')).toHaveLength(0)
 
     const areas: HTMLElement[] = [
@@ -248,12 +252,12 @@ describe('오행 차트와 10년 흐름', () => {
     expect(row.getAttribute('tabindex')).toBe('0')
   })
 
-  it('현재 나이에 해당하는 10년 흐름에 "현재" 표시가 붙는다', async () => {
+  it('현재 나이에 해당하는 10년 흐름 카드에 "지금" 표시와 제목이 붙는다', async () => {
     await show1992()
-    // 1992-10-24 05:30 남자(임=양년) → 순행, 입동(1992-11-07)까지 약 14일 → 대운수 약 4.7세.
-    // 2026-11-10 기준 만 34.04세이므로 34.7세 시작 대운은 아직 오지 않았고, 24.7세 대운이 현재다.
-    const current = screen.getByText('현재')
-    expect(current.closest('button')!.textContent).toMatch(/^24세~ 10년 흐름癸丑계축.*현재$/)
+    // 1992-10-24 05:30 남자(임=양년) → 순행, 대운수 약 4.7세 → 2026-11 기준 24.7세 시작 대운(계축)이 현재
+    const list = screen.getByRole('list', { name: '10년 흐름 목록' })
+    const current = within(list).getByText('지금').closest('button')!
+    expect(current.textContent).toBe('24~33세내 힘으로 서려는 10년바탕: 직장과 책임지금')
   })
 
   it('10년 흐름 카드를 누르면 해마다의 흐름 10개가 바뀐다', async () => {
@@ -274,11 +278,12 @@ describe('명리 분석 화면', () => {
     expect(meter.getAttribute('aria-valuenow')).toBe('48')
     expect(meter.getAttribute('aria-valuetext')).toBe('48퍼센트, 중화')
     const badges = [...document.querySelectorAll('.badge')].map((b) => b.textContent)
-    expect(badges).toEqual(['태어난 달의 도움득령 × 없음', '바로 아래 글자의 도움득지 ○ 있음', '주변 글자의 도움득세 ○ 있음'])
+    expect(badges).toEqual(['태어난 달의 도움 × 없음', '바로 아래 글자의 도움 ○ 있음', '주변 글자의 도움 ○ 있음'])
   })
 
   it('글자 사이 관계 표: 손풀이 5개를 쉬운 이름으로 (원래 이름 병기)', async () => {
-    await show1992()
+    const user = await show1992()
+    await showTerms(user)
     const section = screen.getByRole('region', { name: /^글자 사이의 어울림과 부딪힘/ })
     const table = within(section).getByRole('table', { name: '글자 사이 관계 목록' })
     const names = rowHeaders(table)
@@ -337,7 +342,8 @@ describe('명리 분석 화면', () => {
   })
 
   it('사주 풀이: 근거는 쉬운 말 + 원래 용어(켜져 있을 때)', async () => {
-    await show1992()
+    const user = await show1992()
+    await showTerms(user)
     const love = document.querySelector('details.cat[data-category="love"]')!
     const basis = love.querySelector('.cat-block.basis')!.textContent!
     expect(basis).toContain('배우자를 뜻하는 기운(재물의 기운) 0개')
@@ -360,38 +366,44 @@ describe('명리 분석 화면', () => {
   })
 })
 
-describe('10년 흐름·해마다의 흐름과 내 사주의 관계', () => {
-  it('현재 10년 흐름(계축)과 올해(2026 병오)의 관계 제목이 나온다', async () => {
+describe('10년 흐름·해마다의 흐름 풀이', () => {
+  it('지금의 10년(24~33세)과 올해(2026년)의 풀이가 기본으로 보인다', async () => {
     await show1992()
-    expect(screen.getByText('24세부터의 10년 흐름(계축)과 내 사주의 관계')).toBeTruthy()
-    expect(screen.getByText('2026년의 흐름(병오)과 내 사주·10년 흐름의 관계')).toBeTruthy()
+    const decade = screen.getByRole('article', { name: '24~33세 (지금) · 내 힘으로 서려는 10년' })
+    expect(decade.textContent).toContain('동료·친구·형제와 함께하거나 경쟁하는 일이 중심이 되기 쉬운 10년입니다')
+    // 계축 대운의 축이 일지 유와 반합 → 가까운 자리와 어울림
+    expect(decade.textContent).toContain('가까운 사람과의 관계가 안정되기 쉽습니다')
+    expect(decade.textContent).toContain('이렇게 보내면 좋아요')
+    const year = screen.getByRole('article', { name: '2026년 (올해) · 돈과 성과의 해' })
+    // 병오의 오가 월지 술과 반합 → 일·사회 자리와 어울림, 남성에게 재물 = 배우자 기운
+    expect(year.textContent).toContain('일·사회 자리와 어울리는 글자가 들어와')
+    expect(year.textContent).toContain('연애·결혼과 관련된 일이 생기기 쉬운 해')
   })
 
-  it('2026 병오는 내 사주와 병임충·묘오파·오술 반합을 맺는다 (손풀이)', async () => {
-    await show1992()
-    const tables = screen.getAllByRole('table', { name: '글자 사이 관계 목록' })
-    const names = rowHeaders(tables.at(-1)!)
-    expect(names.some((n) => n.startsWith('임·병 위 글자끼리 부딪힘') && n.includes('병임충'))).toBe(true)
-    expect(names.some((n) => n.startsWith('묘·오 깨짐') && n.includes('묘오파'))).toBe(true)
-    expect(names.some((n) => n.startsWith('술·오 반쪽 어울림') && n.includes('오술 반합'))).toBe(true)
-  })
-
-  it('해마다의 흐름 카드를 누르면 관계 제목이 그 해로 바뀌고 이웃 여부는 "—"이다', async () => {
+  it('근거 자세히에는 들어오는 글자와 관계가 있고, 용어를 켜면 원래 이름(병임충·묘오파·오술 반합)이 보인다', async () => {
     const user = await show1992()
-    await user.click(screen.getByRole('button', { name: /^2024년 흐름/ }))
-    expect(screen.getByText('2024년의 흐름(갑진)과 내 사주·10년 흐름의 관계')).toBeTruthy()
-    const seunTable = screen.getAllByRole('table', { name: '글자 사이 관계 목록' }).at(-1)!
-    const cells = within(seunTable).getAllByRole('row').slice(1).map((r) => within(r).getAllByRole('cell').at(-1)!.textContent)
-    expect(cells.every((c) => c === '—')).toBe(true)
+    await showTerms(user)
+    const year = screen.getByRole('article', { name: /^2026년/ })
+    const basis = year.querySelector('details.flow-basis')!
+    expect(basis.textContent).toContain('들어오는 글자: 병오')
+    for (const name of ['병임충', '묘오파', '오술 반합']) expect(basis.textContent).toContain(name)
   })
 
-  it('10년 흐름을 바꾸면 해마다의 범위와 관계 제목이 바뀐다', async () => {
+  it('해마다 카드를 누르면 그 해의 풀이로 바뀐다 (2025년 을사: 을은 계 일간에게 표현하는 기운)', async () => {
+    const user = await show1992()
+    // 지금의 10년(24~33세)에 해당하는 해는 2017~2026년
+    await user.click(screen.getByRole('button', { name: /^2025년 흐름/ }))
+    expect(screen.getByRole('article', { name: '2025년 · 표현과 새로운 시도의 해' })).toBeTruthy()
+  })
+
+  it('10년 카드를 바꾸면 풀이와 해마다 범위가 바뀐다 (4~13세 신해 · 배우고 준비하는 10년, 1997년부터)', async () => {
     const user = await show1992()
     const list = screen.getByRole('list', { name: '10년 흐름 목록' })
-    await user.click(within(list).getAllByRole('button')[0]) // 첫 대운 4세~ 신해
-    expect(screen.getByText('4세부터의 10년 흐름(신해)과 내 사주의 관계')).toBeTruthy()
-    // 첫 대운은 4세 9개월에 시작(1992-10 + 4.8년 = 1997년)하고 올해(2026)는 범위 밖이라 첫 해가 선택된다
-    expect(screen.getByText(/^1997년의 흐름/)).toBeTruthy()
+    await user.click(within(list).getAllByRole('button')[0])
+    expect(screen.getByRole('article', { name: '4~13세 · 배우고 준비하는 10년' })).toBeTruthy()
+    const years = within(screen.getByRole('list', { name: '해마다의 흐름 목록' })).getAllByRole('button')
+    expect(years).toHaveLength(10)
+    expect(years[0].textContent).toMatch(/^1997년/)
   })
 })
 
@@ -408,11 +420,12 @@ describe('자미두수 화면', () => {
     expect(section.textContent).toContain('물 2 (천하수)')
     expect(section.textContent).toMatch(/나 자신 칸\s*미 자리/)
     expect(section.textContent).toMatch(/후반 인생의 자리\s*축 자리/)
-    expect(section.textContent).toContain('순행')
+    expect(section.textContent).toContain('앞으로 진행')
   })
 
   it('사화는 글자로 표시된다: 임년 천량 화록, 자미 화권, 좌보 화과, 무곡 화기', async () => {
-    await show1992()
+    const user = await show1992()
+    await showTerms(user)
     const section = screen.getByRole('region', { name: /^자미두수/ })
     for (const s of ['화록', '화권', '화과', '화기']) expect(within(section).getAllByText(s)).toHaveLength(1)
     for (const s of ['잘 풀림', '힘을 얻음', '이름이 남', '마음 쓰임']) expect(within(section).getAllByRole('button', { name: new RegExp(`^${s}`) })).toHaveLength(1)
@@ -517,9 +530,8 @@ describe('궁합 보기', () => {
     expect(section.textContent).not.toMatch(/\d+\s*점/)
   })
 
-  it('쉬운 말만 보기에서 궁합 결과에 전문 용어가 없다', async () => {
+  it('쉬운 말만 보기(기본)에서 궁합 결과에 전문 용어가 없다', async () => {
     const user = await show1992()
-    await user.click(screen.getByLabelText('전문 용어 함께 보기'))
     await fillPartner(user)
     await user.click(screen.getByRole('button', { name: '궁합 보기' }))
     const section = screen.getByRole('region', { name: '궁합 보기' })
@@ -552,5 +564,24 @@ describe('궁합 보기', () => {
     expect(await within(section).findByText(/상대:/)).toBeTruthy()
     expect(section.textContent).toContain('경도 보정 없이 계산합니다')
     expect(within(section).queryByRole('alert')).toBeNull()
+  })
+})
+
+describe('화면 구성 (일반인 기준)', () => {
+  it('기본 화면은 풀이 위주이고, 전문 영역은 "전문가용 자세히 보기"에 접혀 있다', async () => {
+    await show1992()
+    const expert = document.querySelector('details.expert') as HTMLDetailsElement
+    expect(expert.open).toBe(false)
+    expect(expert.querySelector('summary')!.textContent).toContain('전문가용 자세히 보기')
+    // 전문 영역은 접힌 곳 안에
+    for (const id of ['strength-title', 'relation-title', 'yongshin-title', 'shinsal-title', 'ziwei-title', 'element-title']) {
+      expect(expert.querySelector(`#${id}`), id).toBeTruthy()
+    }
+    expect(expert.querySelector('table.pillars')).toBeTruthy()
+    // 풀이 영역은 접힌 곳 밖에
+    for (const id of ['overview-title', 'reading-title', 'daeun-title', 'monthly-title', 'compat-title']) {
+      const el = document.getElementById(id)!
+      expect(expert.contains(el), id).toBe(false)
+    }
   })
 })
