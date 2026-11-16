@@ -1141,3 +1141,12 @@ ul.month-tags li {
   border-radius: 999px;
   font-size: 0.75rem;
 }
+
+/* ───── 궁합 ───── */
+.compat-result {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-2);
+}

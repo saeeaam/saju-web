@@ -7,6 +7,7 @@ import { DEFAULT_OPTIONS } from './types/options.ts'
 import type { SajuOptions } from './types/options.ts'
 import { AnalysisPanel } from './ui/AnalysisPanel.tsx'
 import { CategoryPanel } from './ui/CategoryPanel.tsx'
+import { CompatibilityPanel } from './ui/CompatibilityPanel.tsx'
 import { MonthlyPanel } from './ui/MonthlyPanel.tsx'
 import { OverviewCard } from './ui/OverviewCard.tsx'
 import { extractFeatures } from './core/features.ts'
@@ -73,7 +74,7 @@ export default function App({ now }: { now?: Date }) {
             <span className="help">밑줄 친 말을 누르면 뜻을 볼 수 있습니다.</span>
           </div>
           <div aria-live="polite">
-            <Result chart={chart} now={currentTime} />
+            <Result chart={chart} now={currentTime} options={options} />
           </div>
         </>
       )}
@@ -100,7 +101,7 @@ export default function App({ now }: { now?: Date }) {
   )
 }
 
-function Result({ chart, now }: { chart: SajuChart; now: Date }) {
+function Result({ chart, now, options }: { chart: SajuChart; now: Date; options: SajuOptions }) {
   const names = chart.pillars.map((p) => ({ key: p.key, text: ganjiName(p.ganji) }))
   const label = { year: '년', month: '월', day: '일', hour: '시' } as const
   const dm = STEMS[chart.dayMaster]
@@ -151,6 +152,7 @@ function Result({ chart, now }: { chart: SajuChart; now: Date }) {
       <AnalysisPanel chart={chart} />
       <DaeunTimeline chart={chart} now={now} />
       <ZiweiPanel chart={chart} now={now} />
+      <CompatibilityPanel chart={chart} options={options} />
     </>
   )
 }

@@ -490,3 +490,67 @@ describe('한눈에 보기와 월별 흐름', () => {
     expect([...byGanji('무술').querySelectorAll('.month-tags li')].map((x) => x.textContent)).toEqual(['화합', '작은 오해 주의'])
   })
 })
+
+describe('궁합 보기', () => {
+  async function fillPartner(user: ReturnType<typeof userEvent.setup>) {
+    await user.type(screen.getByLabelText('상대 연도'), '1994')
+    await user.type(screen.getByLabelText('상대 월'), '3')
+    await user.type(screen.getByLabelText('상대 일'), '15')
+    await user.type(screen.getByLabelText('상대 시'), '12')
+    await user.type(screen.getByLabelText('상대 분'), '0')
+  }
+
+  it('상대 성별 기본값은 내 성별의 반대', async () => {
+    await show1992()
+    expect((screen.getByLabelText('상대 여') as HTMLInputElement).checked).toBe(true)
+  })
+
+  it('1992 계유일(남) × 1994 경자일(여): 손풀이대로 잘 맞는 점 2개·맞춰 갈 점 2개, 점수 없음', async () => {
+    const user = await show1992()
+    await fillPartner(user)
+    await user.click(screen.getByRole('button', { name: '궁합 보기' }))
+    const section = screen.getByRole('region', { name: '궁합 보기' })
+    expect(await within(section).findByText(/상대: 갑술년 정묘월 경자일 임오시/)).toBeTruthy()
+    expect(section.textContent).toContain('잘 맞는 부분과 맞춰 갈 부분이 함께 있습니다.')
+    const lines = [...section.querySelectorAll('[data-line]')].map((l) => l.getAttribute('data-line'))
+    expect(lines).toEqual(['cp-they-give', 'cp-fill-me-fire', 'cp-they-tired', 'cp-home-tension'])
+    expect(section.textContent).not.toMatch(/\d+\s*점/)
+  })
+
+  it('쉬운 말만 보기에서 궁합 결과에 전문 용어가 없다', async () => {
+    const user = await show1992()
+    await user.click(screen.getByLabelText('전문 용어 함께 보기'))
+    await fillPartner(user)
+    await user.click(screen.getByRole('button', { name: '궁합 보기' }))
+    const section = screen.getByRole('region', { name: '궁합 보기' })
+    await within(section).findByText(/상대:/)
+    for (const w of ['일간', '일지', '연지', '신강', '신약', '천간', '지지']) expect(section.textContent, w).not.toContain(w)
+  })
+
+  it('상대 날짜가 잘못되면 오류 문장', async () => {
+    const user = await show1992()
+    await user.type(screen.getByLabelText('상대 연도'), '1994')
+    await user.type(screen.getByLabelText('상대 월'), '2')
+    await user.type(screen.getByLabelText('상대 일'), '30')
+    await user.click(screen.getByLabelText('상대 시간 모름'))
+    await user.click(screen.getByRole('button', { name: '궁합 보기' }))
+    const section = screen.getByRole('region', { name: '궁합 보기' })
+    expect((await within(section).findByRole('alert')).textContent).toMatch(/존재하지 않는 양력 날짜/)
+  })
+
+  it('경도 보정을 켜도 상대는 보정 없이 계산하고 안내한다 (출생지 없음 오류가 나지 않음)', async () => {
+    const user = userEvent.setup()
+    render(<App now={NOW} />)
+    await user.click(screen.getByText(/^계산 기준/))
+    await user.selectOptions(screen.getByLabelText('태어난 곳의 실제 해 시각 반영'), 'longitude')
+    await fill(user, { year: '1992', month: '10', day: '24', hour: '5', minute: '30' })
+    await submit(user)
+    await screen.findByText(/임신년 경술월/)
+    await fillPartner(user)
+    await user.click(screen.getByRole('button', { name: '궁합 보기' }))
+    const section = screen.getByRole('region', { name: '궁합 보기' })
+    expect(await within(section).findByText(/상대:/)).toBeTruthy()
+    expect(section.textContent).toContain('경도 보정 없이 계산합니다')
+    expect(within(section).queryByRole('alert')).toBeNull()
+  })
+})
